@@ -1,5 +1,15 @@
 package com.example.exoplayernewlibvpx;
-
+/*
+这是选择内容的界面，可以选择：
+* 视频内容content（从youtube下载时获取到的视频分类）
+* 视频编号index（该分类下的第几个视频）
+* 视频质量quality
+* 视频清晰度resolution
+* 视频解码模式mode
+* loopback暂时不知道什么意思
+* algorithm应该是算法中的什么参数
+选项在../res/values/strings.xml里面定义
+*/
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;

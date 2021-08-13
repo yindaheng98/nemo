@@ -1,5 +1,8 @@
 package com.example.exoplayernewlibvpx;
-
+/*
+在ContentSelection.java定义的界面上选好参数之后就跳转到这个页面上播放视频
+这里好像只有控制界面的代码，编解码的代码不知在何处
+*/
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -44,7 +47,7 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
-        setupExoPlayer(
+        setupExoPlayer( //收集配置信息设置ExoPlayer
                 getIntent().getStringExtra("content"),
                 getIntent().getStringExtra("index"),
                 getIntent().getStringExtra("quality"),
@@ -59,7 +62,7 @@ public class PlayerActivity extends AppCompatActivity {
             Log.e("loopback", "no loopback");
         }
         else{
-            loopExoPlayer(Integer.parseInt(loopback));
+            loopExoPlayer(Integer.parseInt(loopback)); //启动ExoPlayer循环播放
         }
     }
 
@@ -86,6 +89,7 @@ public class PlayerActivity extends AppCompatActivity {
         Log.e("loopback", mode);
         Log.e("loopback", algorithm);
 
+        //视频界面模式
         if (mode.equals("Decode")) {
             decodeMode = 0;
         } else if (mode.equals("Decode-SR")) {
@@ -94,6 +98,7 @@ public class PlayerActivity extends AppCompatActivity {
             decodeMode = 2;
         }
 
+        //不同的清晰度代表不同的视频
         if (resolution.equals("240")) {
             videoName = "240p_512kbps_s0_d300.webm";
         } else if (resolution.equals("360")) {
@@ -101,6 +106,7 @@ public class PlayerActivity extends AppCompatActivity {
         } else if (resolution.equals("480")) {
             videoName = "480p_1600kbps_s0_d300.webm";
         }
+
 
         PlayerView playerView = findViewById(R.id.player);
         DefaultRenderersFactory renderFactory = new DefaultRenderersFactory(this, contentPath, quality,  Integer.parseInt(resolution), decodeMode, algorithm);
@@ -115,9 +121,9 @@ public class PlayerActivity extends AppCompatActivity {
 
         playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT);
 
-        MediaSource mediaSource = createLocalMediaSource(contentPath, videoName);
+        MediaSource mediaSource = createLocalMediaSource(contentPath, videoName); //准备媒体数据
 
-        mSimpleExoPlayer.prepare(mediaSource);
+        mSimpleExoPlayer.prepare(mediaSource); //准备媒体数据
         mSimpleExoPlayer.setPlayWhenReady(true);
 
         mSimpleExoPlayer.addListener(new Player.EventListener() {
@@ -149,6 +155,7 @@ public class PlayerActivity extends AppCompatActivity {
 
 
     private void setupDirectories() {
+        //测试相关数据全部放在Android/data/android.example.testlibvpx下
         File dataDir = new File("/storage/emulated/0/Android/data", "android.example.testlibvpx");
         if (!dataDir.exists()) {
             dataDir.mkdir();
@@ -170,12 +177,12 @@ public class PlayerActivity extends AppCompatActivity {
                 //Add model and video from android resources
                 File edsr64Dir = new File("/storage/emulated/0/Android/data/android.example.testlibvpx/files/checkpoint", "EDSR_S_B8_F64_S4");
                 edsr64Dir.mkdir();
-                File model = new File("/storage/emulated/0/Android/data/android.example.testlibvpx/files/checkpoint/EDSR_S_B8_F64_S4", "ckpt-100.dlc");
+                File model = new File("/storage/emulated/0/Android/data/android.example.testlibvpx/files/checkpoint/EDSR_S_B8_F64_S4", "ckpt-100.dlc"); //SR模型数据文件
 
-                File video = new File("/storage/emulated/0/Android/data/android.example.testlibvpx/files/video", "240p_s0_d60_encoded.webm");
+                File video = new File("/storage/emulated/0/Android/data/android.example.testlibvpx/files/video", "240p_s0_d60_encoded.webm"); //待播放的视频
 
                 try {
-                    InputStream modelInputStream = getResources().openRawResource(R.raw.ckpt_100);
+                    InputStream modelInputStream = getResources().openRawResource(R.raw.ckpt_100); //打开模型数据文件测试写入
                     OutputStream modelOutputStream = new FileOutputStream(model);
                     byte[] data = new byte[modelInputStream.available()];
                     modelInputStream.read(data);
@@ -183,7 +190,7 @@ public class PlayerActivity extends AppCompatActivity {
                     modelInputStream.close();
                     modelOutputStream.close();
 
-                    InputStream videoInputStream = getResources().openRawResource(R.raw.video);
+                    InputStream videoInputStream = getResources().openRawResource(R.raw.video); //打开视频文件测试写入
                     OutputStream videoOutputStream = new FileOutputStream(video);
                     byte[] videoData = new byte[videoInputStream.available()];
                     videoInputStream.read(videoData);
