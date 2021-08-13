@@ -35,37 +35,37 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    #setup directory
+    #setup directory 设置安卓设备上的数据目录
     device_root_dir = os.path.join('/sdcard/NEMO', args.content)
 
     #setup videos
     device_video_dir = os.path.join(device_root_dir, 'video')
-    adb_mkdir(device_video_dir, args.device_id)
-    video_path = os.path.join(args.data_dir, args.content, 'video', args.video_name)
-    #adb_push(device_video_dir, video_path, args.device_id)
+    adb_mkdir(device_video_dir, args.device_id) # 在安卓设备数据目录下创建video文件夹
+    video_path = os.path.join(args.data_dir, args.content, 'video', args.video_name) # 设置视频存放路径
+    #adb_push(device_video_dir, video_path, args.device_id) # 将视频拷贝到安卓设备上
 
     #convert a dnn
     video_profile = get_video_profile(video_path)
     input_shape = [1, video_profile['height'], video_profile['width'], 3]
     scale = args.output_height // video_profile['height']
 
-    model = build_model(args.model_type, args.num_blocks, args.num_filters, scale, args.upsample_type, apply_clip=True)
+    model = build_model(args.model_type, args.num_blocks, args.num_filters, scale, args.upsample_type, apply_clip=True) # 构建模型
     if args.train_type == 'train_video':
         checkpoint_dir = os.path.join(args.data_dir, args.content, 'checkpoint', args.video_name, model.name)
     elif args.train_type == 'finetune_video':
         checkpoint_dir = os.path.join(args.data_dir, args.content, 'checkpoint', args.video_name, '{}_finetune'.format(model.name))
     else:
         raise ValueError('Unsupported training types')
-    #snpe_convert_model(model, input_shape, checkpoint_dir)
+    #snpe_convert_model(model, input_shape, checkpoint_dir) # 将模型转化为SNPE
 
     #setup a dnn
-    device_checkpoint_dir = os.path.join(device_root_dir, 'checkpoint', args.video_name)
+    device_checkpoint_dir = os.path.join(device_root_dir, 'checkpoint', args.video_name) # 模型数据在安卓设备上的存放位置
     adb_mkdir(device_checkpoint_dir, args.device_id)
     dlc_path = os.path.join(checkpoint_dir, '{}.dlc'.format(model.name))
-    adb_push(device_checkpoint_dir, dlc_path, args.device_id)
+    adb_push(device_checkpoint_dir, dlc_path, args.device_id) # 将模型数据拷贝到安卓设备上
 
     #setup a cache profile
-    device_cache_profile_dir = os.path.join(device_root_dir, 'profile', args.video_name, model.name)
+    device_cache_profile_dir = os.path.join(device_root_dir, 'profile', args.video_name, model.name) # cache profile在安卓设备上的存放位置
     adb_mkdir(device_cache_profile_dir, args.device_id)
     cache_profile_path = os.path.join(args.data_dir, args.content, 'profile', args.video_name, model.name, '{}.profile'.format(args.algorithm))
-    adb_push(device_cache_profile_dir, cache_profile_path, args.device_id)
+    adb_push(device_cache_profile_dir, cache_profile_path, args.device_id) # 将cache profile拷贝到在安卓设备上

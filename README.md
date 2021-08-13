@@ -143,6 +143,8 @@ $NEMO_CODE_ROOT/nemo/test/script/measure_quality.sh -g 0 -c product_review -q hi
 
 ### 6. Play NEMO in Android smartphones 
 * Setup: Copy data to mobile devices
+  * 构建模型并模型转化为SNPE
+  * 通过ADB将视频、模型数据和cache profile拷贝到安卓设备上
 ```
 $NEMO_CODE_ROOT/nemo/player/script/setup_device.sh -c product_review -q high -r 240 -a nemo_0.5 -d [device id] -a nemo_0.5_16
 ```
