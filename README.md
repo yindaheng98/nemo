@@ -163,3 +163,7 @@ App information
 * 0.5: You can choose the cache profile, 0.5 represents the quality threshold compared to per-frame super-resolutionl.
 ```
 
+* 在`nemo/player/Exoplayer`作者修改了ExoPlayer的源码:
+  * 在`extensions/vp9/src/main/java/com/google/android/exoplayer2/ext/vp9`作者覆盖了ExoPlayer的vp9解码器插件，因为主要的代码都是C实现然后JNI连进来的，所以这里主要是加了几个变量
+  * `extensions/vp9/src/main/jni/vpx_jni.cc`是NEMO解码器的主要JNI代码，实际上是覆盖了原本的vpx代码。这个似乎没有引用外部库？难道是把解码器代码整个放进去了？
+  * 在`nemo/player/app`基于这个修改后的ExoPlayer做出来的简单App

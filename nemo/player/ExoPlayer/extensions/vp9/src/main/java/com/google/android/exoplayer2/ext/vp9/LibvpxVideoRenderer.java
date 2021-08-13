@@ -159,7 +159,7 @@ public class LibvpxVideoRenderer extends BaseRenderer {
 
   protected DecoderCounters decoderCounters;
 
-  /***NEMO***/
+  /******///为NEMO渲染器添加的类成员
   public String contentPath;
   public String quality;
   public int resolution;
@@ -200,7 +200,7 @@ public class LibvpxVideoRenderer extends BaseRenderer {
         /* useSurfaceYuvOutput= */ false);
   }
 
-  /***NEMO***/
+  /***NEMO***///为NEMO渲染器添加的构造函数
   public LibvpxVideoRenderer(boolean scaleToFit, long allowedJoiningTimeMs,
                              Handler eventHandler, VideoRendererEventListener eventListener,
                              int maxDroppedFramesToNotify, String contentPath, String quality, int resolution, int decodeMode, String algorithm) {
@@ -214,7 +214,7 @@ public class LibvpxVideoRenderer extends BaseRenderer {
             /* playClearSamplesWithoutKeys= */ false,
             /* disableLoopFilter= */ false,
             /* useSurfaceYuvOutput= */ false);
-    this.contentPath = contentPath;
+    this.contentPath = contentPath; //其实就是比上面的基础构造函数初始化几个类成员
     this.quality = quality;
     this.resolution = resolution;
     this.decodeMode = decodeMode;

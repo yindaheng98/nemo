@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
 
   private volatile int outputMode;
 
-  /***NEMO***/
+  /***NEMO***///为NEMO解码器添加的类成员
   public String contentPath;
   public String quality;
   public int resolution;
@@ -81,6 +81,7 @@ import java.nio.ByteBuffer;
       throw new VpxDecoderException("Vpx decoder does not support secure decode.");
     }
     vpxDecContext = vpxInit(disableLoopFilter, enableSurfaceYuvOutputMode,contentPath,quality,resolution,decodeMode,algorithm);
+    //这里的contentPath,quality,resolution,decodeMode,algorithm应该都是空，但是vpxInit被NEMO解码器覆盖了，所以还是必须得传
     if (vpxDecContext == 0) {
       throw new VpxDecoderException("Failed to initialize decoder");
     }
@@ -88,7 +89,7 @@ import java.nio.ByteBuffer;
   }
 
 
-  /***NEMO***/
+  /***NEMO***///为NEMO解码器添加的构造函数
   public VpxDecoder(
           int numInputBuffers,
           int numOutputBuffers,
@@ -118,6 +119,7 @@ import java.nio.ByteBuffer;
       throw new VpxDecoderException("Vpx decoder does not support secure decode.");
     }
     vpxDecContext = vpxInit(disableLoopFilter, enableSurfaceYuvOutputMode,contentPath,quality,resolution,decodeMode, algorithm);
+    //其实就是初始化的时候加了几个变量
     if (vpxDecContext == 0) {
       throw new VpxDecoderException("Failed to initialize decoder");
     }
@@ -218,6 +220,7 @@ import java.nio.ByteBuffer;
     }
   }
 
+  //下面这些就是vpx编解码的方法了，他们都是C语言实现然后用JNI连进来的
   private native long vpxInit(boolean disableLoopFilter, boolean enableSurfaceYuvOutputMode, String contentPath, String quality, int resolution, int decodeMode, String algorithm);
 
   private native long vpxClose(long context);

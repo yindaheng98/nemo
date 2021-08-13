@@ -85,6 +85,7 @@ public class DefaultRenderersFactory implements RenderersFactory {
 
   protected static final int MAX_DROPPED_VIDEO_FRAME_COUNT_TO_NOTIFY = 50;
 
+  //为NEMO准备的类成员
   public String contentPath;
   public String quality;
   public int resolution;
@@ -128,9 +129,9 @@ public class DefaultRenderersFactory implements RenderersFactory {
 //    this(context, extensionRendererMode, DEFAULT_ALLOWED_VIDEO_JOINING_TIME_MS);
 //  }
 
-  /***NEMO***/
+  /***NEMO***///为NEMO准备的渲染器，界面上选好的参数就是被传到这里的
   public DefaultRenderersFactory(Context context, String contentPath, String quality, int resolution, int decodeMode, String algorithm){
-    this(context);
+    this(context);//其实就是多初始化几个类成员
     this.contentPath = contentPath;
     this.quality = quality;
     this.resolution = resolution;

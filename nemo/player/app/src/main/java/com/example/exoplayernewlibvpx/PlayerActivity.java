@@ -1,7 +1,8 @@
 package com.example.exoplayernewlibvpx;
 /*
 在ContentSelection.java定义的界面上选好参数之后就跳转到这个页面上播放视频
-这里好像只有控制界面的代码，编解码的代码不知在何处
+这里只有控制界面的代码，编解码的代码在com.google.android.exoplayer2里
+作者修改了com.google.android.exoplayer2的代码，选好的参数都将传入至com.google.android.exoplayer2.DefaultRenderersFactory
 */
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -109,7 +110,12 @@ public class PlayerActivity extends AppCompatActivity {
 
 
         PlayerView playerView = findViewById(R.id.player);
+
+        //Renderer渲染器，用于渲染媒体文件。当创建播放器的时候，Renderers被注入
+        //这里，参数通过DefaultRenderersFactory传入到com.google.android.exoplayer2中
         DefaultRenderersFactory renderFactory = new DefaultRenderersFactory(this, contentPath, quality,  Integer.parseInt(resolution), decodeMode, algorithm);
+        //而com.google.android.exoplayer2里有作者自己实现的编码器
+
         renderFactory.setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER);
         mSimpleExoPlayer =
                 ExoPlayerFactory.newSimpleInstance(this,
@@ -122,6 +128,7 @@ public class PlayerActivity extends AppCompatActivity {
         playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT);
 
         MediaSource mediaSource = createLocalMediaSource(contentPath, videoName); //准备媒体数据
+        //MediaSource媒体资源，用于定义要播放的媒体，加载媒体，以及从哪里加载媒体。简单的说，MediaSource就是代表我们要播放的媒体文件，可以是本地资源，可以是网络资源。
 
         mSimpleExoPlayer.prepare(mediaSource); //准备媒体数据
         mSimpleExoPlayer.setPlayWhenReady(true);

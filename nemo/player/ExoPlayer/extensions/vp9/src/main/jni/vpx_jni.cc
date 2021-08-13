@@ -467,7 +467,7 @@ static void _mkdir(const char *dir) {
 
 //TODO: code for loading data
 //TODO: select content, index, quality, resolution
-
+//这个对应java里的vpxInit
 DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
              jboolean enableBufferManager, jstring content_path, jstring quality, jint resolution,
              jint decode_mode, jstring algorithm) {
@@ -680,6 +680,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     return reinterpret_cast<intptr_t>(context);
 }
 
+//这个对应java里的vpxDecode
 DECODER_FUNC(jlong, vpxDecode, jlong jContext, jobject encoded, jint len) {
 
     JniCtx *const context = reinterpret_cast<JniCtx *>(jContext);
