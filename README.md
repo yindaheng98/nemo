@@ -165,5 +165,9 @@ App information
 
 * 在`nemo/player/Exoplayer`作者修改了ExoPlayer的源码:
   * 在`extensions/vp9/src/main/java/com/google/android/exoplayer2/ext/vp9`作者覆盖了ExoPlayer的vp9解码器插件，因为主要的代码都是C实现然后JNI连进来的，所以这里主要是加了几个变量
-  * `extensions/vp9/src/main/jni/vpx_jni.cc`是NEMO解码器的主要JNI代码，实际上是覆盖了原本的vpx代码。这个似乎没有引用外部库？难道是把解码器代码整个放进去了？
+  * `extensions/vp9/src/main/jni/vpx_jni.cc`是NEMO解码器的主要JNI代码。
+    * ~~这个似乎没有引用外部库？难道是把解码器代码整个放进去了？~~
+    * 实际上只是添加了NEMO输入参数和初始化NEMO设置的代码，连调用解码器的过程都没改
+    * 作者应该只是魔改了libvpx的实现，所以只需要改设置NEMO的几个函数就好了
+    * 作者魔改的libvpx是外部库，作者写的安装过程应该是直接覆盖本地的libvpx里面的vp9编码器，所以连外部引用都不需要改
   * 在`nemo/player/app`基于这个修改后的ExoPlayer做出来的简单App

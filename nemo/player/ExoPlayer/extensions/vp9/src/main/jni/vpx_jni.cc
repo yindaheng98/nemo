@@ -469,7 +469,7 @@ static void _mkdir(const char *dir) {
 //TODO: select content, index, quality, resolution
 //这个对应java里的vpxInit
 DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
-             jboolean enableBufferManager, jstring content_path, jstring quality, jint resolution,
+             jboolean enableBufferManager, jstring content_path, jstring quality, jint resolution, //多加的几个初始化变量，从Java里面传过来
              jint decode_mode, jstring algorithm) {
 
     JniCtx *context = new JniCtx(enableBufferManager);
@@ -492,7 +492,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
         }
     }
 
-    /* NEMO: load nemo_cfg, dnn, cache_profile */
+    /* NEMO: load nemo_cfg, dnn, cache_profile 加载NEMO解码器*/
     nemo_cfg_t *nemo_cfg = init_nemo_cfg();
 
     nemo_cfg->decode_mode = static_cast<nemo_decode_mode>(decode_mode);
@@ -509,6 +509,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     nemo_cfg->save_latency = 1;
     nemo_cfg->save_metadata = 1;
 
+    //转换几个设置项
     const char *contentPath = env->GetStringUTFChars(content_path, NULL);
     const char *quality_ = env->GetStringUTFChars(quality, NULL);
     const char *algorithm_ = env->GetStringUTFChars(algorithm, NULL);
@@ -537,7 +538,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
     }
 
     if (strcmp(quality_, "low") == 0){
-        num_anchor_points = 8;
+        num_anchor_points = 8;//不同的质量对应不同的AP数量
         if (resolution_ == 240) {
             sprintf(dnn_name, "NEMO_S_B4_F9_S4_deconv");
             sprintf(dnn_file, "%s/checkpoint/%s/%s.dlc", content_dir, input_video_name, dnn_name);
@@ -614,19 +615,19 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
 
     //setup log directories
     switch (nemo_cfg->decode_mode) {
-        case DECODE:
+        case DECODE://无NEMO解码
             if (nemo_cfg->save_latency) {
                 sprintf(nemo_cfg->log_dir, "%s/log/%s", content_dir, input_video_name);
                 _mkdir(nemo_cfg->log_dir);
             }
             break;
-        case DECODE_SR:
+        case DECODE_SR://逐帧SR解码
             if (nemo_cfg->save_latency) {
                 sprintf(nemo_cfg->log_dir, "%s/log/%s/%s", content_dir, input_video_name, dnn_name);
                 _mkdir(nemo_cfg->log_dir);
             }
             break;
-        case DECODE_CACHE:
+        case DECODE_CACHE://NEMO+Cache Profile解码
             if (nemo_cfg->save_latency) {
                 sprintf(nemo_cfg->log_dir, "%s/log/%s/%s/%s", content_dir, input_video_name,
                         dnn_name, cache_profile_name);
@@ -635,19 +636,19 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
             break;
     }
 
-    if (vpx_load_nemo_cfg(context->decoder, nemo_cfg)) {
+    if (vpx_load_nemo_cfg(context->decoder, nemo_cfg)) {//载入NEMO设置
         LOGE("fail1");
     }
 
     if (nemo_cfg->decode_mode == DECODE_SR || nemo_cfg->decode_mode == DECODE_CACHE) {
-        if (vpx_load_nemo_dnn(context->decoder, scale, dnn_file)) {
+        if (vpx_load_nemo_dnn(context->decoder, scale, dnn_file)) {//载入NEMO模型
             LOGE("fail2");
             LOGE("nemo_dnn: %s", dnn_file);
         }
     }
 
     if (nemo_cfg->decode_mode == DECODE_CACHE &&  nemo_cfg->cache_mode == PROFILE_CACHE) {
-        if (vpx_load_nemo_cache_profile(context->decoder, scale, cache_profile_file)) {
+        if (vpx_load_nemo_cache_profile(context->decoder, scale, cache_profile_file)) {//载入Cache Profile设置
             LOGE("fail3");
             LOGE("nemo_cache profile: %s", cache_profile_file);
         }
@@ -665,7 +666,7 @@ DECODER_FUNC(jlong, vpxInit, jboolean disableLoopFilter,
         }
     }
 
-    // Populate JNI References.
+    // Populate JNI References. 初始化几个Java里的函数，后面需要从C里面反过去调用Java
     const jclass outputBufferClass = env->FindClass(
             "com/google/android/exoplayer2/ext/vp9/VpxOutputBuffer");
     initForYuvFrame = env->GetMethodID(outputBufferClass, "initForYuvFrame",
@@ -687,7 +688,7 @@ DECODER_FUNC(jlong, vpxDecode, jlong jContext, jobject encoded, jint len) {
     const uint8_t *const buffer =
             reinterpret_cast<const uint8_t *>(env->GetDirectBufferAddress(encoded));
     const vpx_codec_err_t status =
-            vpx_codec_decode(context->decoder, buffer, len, NULL, 0);
+            vpx_codec_decode(context->decoder, buffer, len, NULL, 0);//将帧解码后放到buffer里
     errorCode = 0;
     if (status != VPX_CODEC_OK) {
         LOGE("ERROR: vpx_codec_decode() failed, status= %d", status);
